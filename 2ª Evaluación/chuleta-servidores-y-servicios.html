@@ -1,0 +1,293 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .chuleta { padding: 16px 0; max-width: 680px; }
+  .section { margin-bottom: 18px; border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+  .section-header { padding: 10px 16px; font-size: 13px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+  .section-header:hover { opacity: 0.85; }
+  .section-body { padding: 14px 16px; border-top: 1px solid var(--color-border-tertiary); display: none; }
+  .section.open .section-body { display: block; }
+  .chevron { margin-left: auto; font-size: 11px; transition: transform 0.2s; }
+  .section.open .chevron { transform: rotate(180deg); }
+
+  .s-ssh { background: #E6F1FB; } .s-ssh .section-header { color: #0C447C; }
+  .s-http { background: #EAF3DE; } .s-http .section-header { color: #27500A; }
+  .s-aws { background: #FAEEDA; } .s-aws .section-header { color: #633806; }
+  .s-nginx { background: #EEEDFE; } .s-nginx .section-header { color: #3C3489; }
+  .s-dns { background: #E1F5EE; } .s-dns .section-header { color: #085041; }
+  .s-cmd { background: #FCEBEB; } .s-cmd .section-header { color: #791F1F; }
+  .s-scp { background: #FBEAF0; } .s-scp .section-header { color: #72243E; }
+  .s-qa { background: #F1EFE8; } .s-qa .section-header { color: #2C2C2A; }
+
+  @media (prefers-color-scheme: dark) {
+    .s-ssh { background: #042C53; } .s-ssh .section-header { color: #B5D4F4; }
+    .s-http { background: #173404; } .s-http .section-header { color: #C0DD97; }
+    .s-aws { background: #412402; } .s-aws .section-header { color: #FAC775; }
+    .s-nginx { background: #26215C; } .s-nginx .section-header { color: #CECBF6; }
+    .s-dns { background: #04342C; } .s-dns .section-header { color: #9FE1CB; }
+    .s-cmd { background: #501313; } .s-cmd .section-header { color: #F7C1C1; }
+    .s-scp { background: #4B1528; } .s-scp .section-header { color: #F4C0D1; }
+    .s-qa { background: #2C2C2A; } .s-qa .section-header { color: #D3D1C7; }
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+  th { text-align: left; padding: 6px 8px; font-weight: 500; font-size: 12px; color: var(--color-text-secondary); border-bottom: 1px solid var(--color-border-tertiary); }
+  td { padding: 6px 8px; color: var(--color-text-primary); border-bottom: 1px solid var(--color-border-tertiary); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  code { font-family: var(--font-mono); font-size: 12px; background: var(--color-background-secondary); padding: 2px 6px; border-radius: 4px; display: inline-block; }
+  .block { font-family: var(--font-mono); font-size: 12px; background: var(--color-background-secondary); padding: 10px 12px; border-radius: 8px; margin-top: 8px; white-space: pre; line-height: 1.7; overflow-x: auto; }
+  p { font-size: 13px; color: var(--color-text-primary); line-height: 1.7; margin-top: 6px; }
+  .label { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 12px; margin-bottom: 4px; }
+  .pill { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; margin-right: 4px; margin-bottom: 4px; }
+  .pill-ok { background: #EAF3DE; color: #27500A; }
+  .pill-warn { background: #FAEEDA; color: #633806; }
+  .pill-bad { background: #FCEBEB; color: #791F1F; }
+  @media (prefers-color-scheme: dark) {
+    .pill-ok { background: #173404; color: #C0DD97; }
+    .pill-warn { background: #412402; color: #FAC775; }
+    .pill-bad { background: #501313; color: #F7C1C1; }
+  }
+  .qa-item { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--color-border-tertiary); }
+  .qa-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .qa-q { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+  .qa-a { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+  .open-all { font-size: 12px; color: var(--color-text-secondary); cursor: pointer; padding: 0 0 12px; display: inline-block; }
+  .open-all:hover { color: var(--color-text-primary); }
+  .flow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .flow-step { font-size: 12px; padding: 4px 10px; border-radius: 20px; background: var(--color-background-secondary); color: var(--color-text-primary); border: 1px solid var(--color-border-tertiary); }
+  .flow-arrow { font-size: 14px; color: var(--color-text-tertiary); }
+</style>
+
+<div class="chuleta">
+  <span class="open-all" onclick="toggleAll()">▸ Expandir todo</span>
+
+  <!-- SSH -->
+  <div class="section s-ssh" onclick="toggle(this)">
+    <div class="section-header">🔐 SSH — Acceso al servidor <span class="chevron">▾</span></div>
+    <div class="section-body">
+      <table>
+        <tr><th>Concepto</th><th>Detalle</th></tr>
+        <tr><td>Puerto</td><td><code>22</code></td></tr>
+        <tr><td>Criptografía</td><td>Asimétrica (2 claves)</td></tr>
+        <tr><td>Clave pública</td><td>Está en el servidor → <code>~/.ssh/authorized_keys</code></td></tr>
+        <tr><td>Clave privada</td><td>En tu PC → archivo <code>.pem</code> / <code>.ppk</code></td></tr>
+        <tr><td>Passphrase</td><td>Contraseña extra que protege la clave privada</td></tr>
+        <tr><td>Algoritmo</td><td>ED25519 (el que viste en el servidor)</td></tr>
+      </table>
+      <div class="label">Conectar con PuTTY + clave</div>
+      <div class="block">Connection → SSH → Auth → Credentials
+→ Private key file: clave.ppk
+→ Open → login as: ubuntu</div>
+      <div class="label">Conectar con CMD</div>
+      <div class="block">ssh -i ruta\clave.pem ubuntu@IP</div>
+      <p style="margin-top:10px; font-size:12px; color:var(--color-text-secondary)">La clave privada NUNCA viaja por la red. Solo se verifica localmente.</p>
+    </div>
+  </div>
+
+  <!-- HTTP/HTTPS -->
+  <div class="section s-http" onclick="toggle(this)">
+    <div class="section-header">🌐 HTTP / HTTPS — Puertos y cifrado <span class="chevron">▾</span></div>
+    <div class="section-body">
+      <table>
+        <tr><th>Protocolo</th><th>Puerto</th><th>Qué hace</th></tr>
+        <tr><td>HTTP</td><td><code>80</code></td><td>Recibe la petición, redirige con 301 a HTTPS</td></tr>
+        <tr><td>HTTPS</td><td><code>443</code></td><td>Sirve la web con cifrado SSL</td></tr>
+      </table>
+      <div class="label">Flujo completo cuando entras a una URL</div>
+      <div class="flow">
+        <span class="flow-step">Escribes URL</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">DNS resuelve IP (wildcard)</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Puerto 80</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">301 redirect</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Puerto 443 SSL</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">NGINX regex → /var/www/$subdomain</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">index.html</span>
+      </div>
+      <div class="label">Instalar certificado SSL gratis</div>
+      <div class="block">sudo apt install certbot python3-certbot-nginx -y
+sudo certbot --nginx -d claseisidra.com -d www.claseisidra.com</div>
+    </div>
+  </div>
+
+  <!-- AWS -->
+  <div class="section s-aws" onclick="toggle(this)">
+    <div class="section-header">☁️ AWS — Instancia y seguridad <span class="chevron">▾</span></div>
+    <div class="section-body">
+      <table>
+        <tr><th>Concepto</th><th>Detalle</th></tr>
+        <tr><td>Sistema operativo</td><td>Ubuntu</td></tr>
+        <tr><td>IP Elástica</td><td>IP fija aunque reinicies → el DNS no se rompe</td></tr>
+        <tr><td>Security Groups</td><td>Firewall de AWS. Solo permiten IPs/puertos autorizados</td></tr>
+      </table>
+      <div class="label">Puertos que abrir en Security Groups</div>
+      <table>
+        <tr><th>Tipo</th><th>Puerto</th><th>Para qué</th></tr>
+        <tr><td>SSH</td><td><code>22</code></td><td>Conexión al servidor</td></tr>
+        <tr><td>HTTP</td><td><code>80</code></td><td>Web (redirige a HTTPS)</td></tr>
+        <tr><td>HTTPS</td><td><code>443</code></td><td>Web con SSL</td></tr>
+      </table>
+      <p style="margin-top:10px; font-size:12px; color:var(--color-text-secondary)">Sin IP Elástica: reinicias el servidor → cambia la IP → el DNS apunta al vacío → web caída.</p>
+    </div>
+  </div>
+
+  <!-- NGINX -->
+  <div class="section s-nginx" onclick="toggle(this)">
+    <div class="section-header">⚙️ NGINX — Configuración y subdominios <span class="chevron">▾</span></div>
+    <div class="section-body">
+      <table>
+        <tr><th>Ruta</th><th>Función</th></tr>
+        <tr><td><code>/etc/nginx/sites-available/</code></td><td>Cajón con TODAS las configs (activas o no)</td></tr>
+        <tr><td><code>/etc/nginx/sites-enabled/</code></td><td>Solo los sitios ACTIVOS (enlaces simbólicos)</td></tr>
+      </table>
+      <div class="label">Activar / desactivar un sitio</div>
+      <div class="block">sudo ln -s /etc/nginx/sites-available/web /etc/nginx/sites-enabled/
+sudo rm /etc/nginx/sites-enabled/web</div>
+      <div class="label">Flujo obligatorio tras editar config</div>
+      <div class="flow">
+        <span class="flow-step">Editar archivo</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">sudo nginx -t</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">sudo systemctl reload nginx</span>
+      </div>
+      <p style="margin-top:8px; font-size:12px; color:var(--color-text-secondary)">reload = aplica cambios sin cortar conexiones. restart = corta todo. Siempre -t antes de reload.</p>
+      <div class="label">Regex de subdominios (alumnos-wildcard)</div>
+      <div class="block">server_name ~^(?<subdomain>.+)\.claseisidra\.com$;
+root /var/www/$subdomain;</div>
+      <p style="font-size:12px; color:var(--color-text-secondary); margin-top:6px">La variable $subdomain captura lo que sea antes del dominio. edicxon.claseisidra.com → /var/www/edicxon/</p>
+    </div>
+  </div>
+
+  <!-- DNS -->
+  <div class="section s-dns" onclick="toggle(this)">
+    <div class="section-header">📡 DNS — Registros <span class="chevron">▾</span></div>
+    <div class="section-body">
+      <table>
+        <tr><th>Registro</th><th>Traduce / sirve para</th><th>Ejemplo</th></tr>
+        <tr><td><code>A</code></td><td>Nombre → IPv4</td><td>claseisidra.com → 13.49.68.99</td></tr>
+        <tr><td><code>AAAA</code></td><td>Nombre → IPv6</td><td>claseisidra.com → 2001:db8::1</td></tr>
+        <tr><td><code>CNAME</code></td><td>Alias (nombre → nombre)</td><td>www.claseisidra.com → claseisidra.com</td></tr>
+        <tr><td><code>MX</code></td><td>Correo electrónico</td><td>→ mail.claseisidra.com</td></tr>
+        <tr><td><code>* (wildcard)</code></td><td>Cualquier subdominio → misma IP</td><td>*.claseisidra.com → 13.49.68.99</td></tr>
+      </table>
+      <p style="margin-top:10px; font-size:12px; color:var(--color-text-secondary)">Truco para recordar: A = Address IPv4 | AAAA = cuatro A = IPv6 | CNAME = Canonical NAME = alias | MX = Mail eXchange</p>
+    </div>
+  </div>
+
+  <!-- Comandos -->
+  <div class="section s-cmd" onclick="toggle(this)">
+    <div class="section-header">💻 Comandos esenciales <span class="chevron">▾</span></div>
+    <div class="section-body">
+      <table>
+        <tr><th>Comando</th><th>Para qué sirve</th></tr>
+        <tr><td><code>pwd</code></td><td>Ver en qué carpeta estás</td></tr>
+        <tr><td><code>ls -la</code></td><td>Listar archivos con permisos y propietario</td></tr>
+        <tr><td><code>cat archivo</code></td><td>Ver contenido de un archivo</td></tr>
+        <tr><td><code>nano archivo</code></td><td>Editar archivo (Ctrl+O guardar, Ctrl+X salir)</td></tr>
+        <tr><td><code>echo '...' | tee archivo</code></td><td>Crear archivo con contenido (con sudo)</td></tr>
+        <tr><td><code>rm archivo</code></td><td>Borrar archivo</td></tr>
+        <tr><td><code>mkdir -p /ruta</code></td><td>Crear carpeta (y subcarpetas si no existen)</td></tr>
+        <tr><td><code>groups</code></td><td>Ver tus grupos</td></tr>
+        <tr><td><code>id</code></td><td>Ver uid, gid y grupos completos</td></tr>
+        <tr><td><code>cat ~/.ssh/authorized_keys</code></td><td>Ver tu clave pública SSH</td></tr>
+        <tr><td><code>sudo nginx -t</code></td><td>Comprobar config NGINX (solo admin)</td></tr>
+        <tr><td><code>sudo systemctl reload nginx</code></td><td>Aplicar cambios NGINX (solo admin)</td></tr>
+        <tr><td><code>sudo ln -s origen destino</code></td><td>Crear enlace simbólico</td></tr>
+      </table>
+      <div class="label">Leer permisos: -rw-r--r--</div>
+      <div class="block">- rw- r-- r--
+│ │   │   └── otros: solo leer
+│ │   └────── grupo: solo leer  
+│ └────────── propietario: leer y escribir
+└──────────── tipo (- archivo, d directorio)</div>
+    </div>
+  </div>
+
+  <!-- SCP -->
+  <div class="section s-scp" onclick="toggle(this)">
+    <div class="section-header">📦 SCP — Transferencia segura de archivos <span class="chevron">▾</span></div>
+    <div class="section-body">
+      <p>SCP usa el puerto 22 (igual que SSH). Cifra la transferencia.</p>
+      <div class="label">Subir archivo (PC → Servidor)</div>
+      <div class="block">scp archivo.txt edicxon@13.49.68.99:/var/www/edicxon/
+scp -i clave.pem archivo.txt edicxon@IP:/var/www/edicxon/</div>
+      <div class="label">Bajar archivo (Servidor → PC)</div>
+      <div class="block">scp edicxon@13.49.68.99:/var/www/edicxon/archivo.txt C:\Users\User\Desktop\
+scp -i clave.pem edicxon@IP:/ruta/archivo.txt C:\destino\</div>
+      <table style="margin-top:10px">
+        <tr><th>Opción</th><th>Para qué</th></tr>
+        <tr><td><code>-i clave.pem</code></td><td>Usar clave privada en vez de contraseña</td></tr>
+        <tr><td><code>-P 22</code></td><td>Puerto personalizado (P mayúscula)</td></tr>
+        <tr><td><code>-r</code></td><td>Copiar carpeta entera (recursivo)</td></tr>
+      </table>
+      <p style="margin-top:8px; font-size:12px; color:var(--color-text-secondary)">Primera vez: pregunta si confías en el servidor → escribir "yes" y pulsar Enter.</p>
+    </div>
+  </div>
+
+  <!-- Preguntas y respuestas -->
+  <div class="section s-qa" onclick="toggle(this)">
+    <div class="section-header">🧠 Preguntas tipo examen (con respuesta) <span class="chevron">▾</span></div>
+    <div class="section-body">
+
+      <div class="qa-item">
+        <div class="qa-q">1. ¿Qué es la criptografía asimétrica y cómo se usa en SSH?</div>
+        <div class="qa-a">Usa dos claves: pública (en el servidor, en ~/.ssh/authorized_keys) y privada (en tu PC, el .pem/.ppk). Al conectarte, el servidor te desafía con un problema que solo tu clave privada puede resolver. Si lo resuelves, entras sin contraseña. La clave privada nunca viaja por la red.</div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">2. ¿Qué ocurre cuando entras a http://edicxon.claseisidra.com?</div>
+        <div class="qa-a">El navegador consulta el DNS → el wildcard *.claseisidra.com devuelve la IP del servidor → llega por el puerto 80 → NGINX redirige con un 301 al puerto 443 (HTTPS) → la regex captura "edicxon" en $subdomain → sirve /var/www/edicxon/index.html.</div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">3. ¿Diferencia entre sites-available y sites-enabled en NGINX?</div>
+        <div class="qa-a">sites-available es el cajón con todas las configuraciones (activas o no). sites-enabled contiene enlaces simbólicos (accesos directos) a los sitios activos. Para activar: sudo ln -s. Para desactivar: sudo rm. Borrar el enlace no borra el archivo original.</div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">4. ¿Qué hace esta línea: server_name ~^(?&lt;subdomain&gt;.+)\.claseisidra\.com$?</div>
+        <div class="qa-a">El ~ indica que es una regex. Captura cualquier subdominio y lo guarda en la variable $subdomain. Luego root /var/www/$subdomain; usa esa variable para saber a qué carpeta mandar al usuario. Un solo bloque sirve para todos los alumnos.</div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">5. ¿Por qué se usa IP Elástica en AWS y qué tiene que ver con el DNS?</div>
+        <div class="qa-a">Sin IP Elástica, cada vez que reinicias el servidor la IP cambia. El DNS seguiría apuntando a la IP antigua y la web caería. La IP Elástica es fija aunque reinicies, así que los registros DNS (incluido el wildcard) siempre apuntan correctamente.</div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">6. ¿Diferencia entre systemctl reload y restart nginx?</div>
+        <div class="qa-a">reload aplica los cambios de configuración sin cortar las conexiones activas. restart para NGINX completamente y lo vuelve a arrancar, cortando a todos los usuarios conectados. En producción siempre se usa reload. Y siempre precedido de sudo nginx -t para verificar que no hay errores.</div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">7. ¿Para qué sirven los registros A, AAAA, CNAME, MX y wildcard?</div>
+        <div class="qa-a">A → nombre a IPv4 | AAAA → nombre a IPv6 | CNAME → alias (nombre a nombre, ej: www → dominio principal) | MX → indica el servidor de correo | Wildcard (*) → cualquier subdominio apunta automáticamente a la misma IP sin crear registros uno a uno.</div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">8. ¿Cómo subirías el archivo web.html al servidor con tu clave .pem?</div>
+        <div class="qa-a"><code>scp -i C:\Users\User\clave.pem web.html edicxon@IP:/var/www/edicxon/</code> — el orden es: scp → opción -i → clave → archivo origen → usuario@IP:destino</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function toggle(el) {
+  el.classList.toggle('open');
+}
+function toggleAll() {
+  const sections = document.querySelectorAll('.section');
+  const anyOpen = [...sections].some(s => s.classList.contains('open'));
+  sections.forEach(s => anyOpen ? s.classList.remove('open') : s.classList.add('open'));
+  document.querySelector('.open-all').textContent = anyOpen ? '▸ Expandir todo' : '▴ Colapsar todo';
+}
+</script>

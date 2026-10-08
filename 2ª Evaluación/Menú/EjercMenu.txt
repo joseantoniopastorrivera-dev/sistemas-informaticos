@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# Función para mostrar el usuario y la ruta actual
+mostrar_usuario_ruta() {
+    echo "Usuario: $(whoami)"
+    echo "Ruta actual: $(pwd)"
+}
+
+# Función para comprobar si existe un archivo o carpeta
+comprobar_existencia() {
+    read -p "Ingresa el nombre del archivo o carpeta a comprobar: " archivo
+    if [ -e "$archivo" ]; then
+        echo "El archivo o carpeta '$archivo' existe."
+    else
+        echo "El archivo o carpeta '$archivo' no existe."
+    fi
+}
+
+# Función para crear una carpeta si no existe
+crear_carpeta() {
+    read -p "Ingresa el nombre de la carpeta a crear: " carpeta
+    if [ -d "$carpeta" ]; then
+        echo "La carpeta '$carpeta' ya existe."
+    else
+        mkdir "$carpeta"
+        echo "Carpeta '$carpeta' creada exitosamente."
+    fi
+}
+
+# Función para mostrar las primeras N líneas de un archivo
+mostrar_primeras_lineas() {
+    read -p "Ingresa el nombre del archivo: " archivo
+    read -p "Cuántas líneas deseas mostrar? " n_lineas
+    if [ -f "$archivo" ]; then
+        head -n "$n_lineas" "$archivo"
+    else
+        echo "El archivo '$archivo' no existe."
+    fi
+}
+
+# Función para mostrar el menú y ejecutar las opciones
+menu() {
+    while true; do
+        echo "-----------------------------"
+        echo "Menú de opciones:"
+        echo "1. Mostrar usuario y ruta actual"
+        echo "2. Comprobar si existe un archivo o carpeta"
+        echo "3. Crear carpeta"
+        echo "4. Mostrar las N primeras líneas de un archivo"
+        echo "5. Salir"
+        read -p "Selecciona una opción (1-5): " opcion
+
+        case $opcion in
+            1)
+                mostrar_usuario_ruta
+                ;;
+            2)
+                comprobar_existencia
+                ;;
+            3)
+                crear_carpeta
+                ;;
+            4)
+                mostrar_primeras_lineas
+                ;;
+            5)
+                echo "Saliendo del programa..."
+                break
+                ;;
+            *)
+                echo "Opción no válida. Por favor, elige una opción entre 1 y 5."
+                ;;
+        esac
+    done
+}
+
+# Llamar al menú
+menu
